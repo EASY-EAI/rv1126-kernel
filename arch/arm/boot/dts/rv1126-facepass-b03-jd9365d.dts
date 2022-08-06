@@ -1,0 +1,3 @@
+/dts-v1/;
+#include "rv1126-facepass-b03.dts"
+#include "lmo-display-jd9365d.dtsi"

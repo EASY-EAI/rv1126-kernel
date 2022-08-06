@@ -1,0 +1,85 @@
+/dts-v1/;
+#include "rv1126-nano.dts"
+
+/ {
+	hdmi-connector {
+		compatible = "hdmi-connector";
+		ddc-i2c-bus = <&i2c5>;
+		label = "hdmi";
+		type = "a";
+
+		port {
+			hdmi_connector_in: endpoint {
+				remote-endpoint = <&lt8912_out>;
+			};
+		};
+	};
+};
+
+&dsi {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	/delete-property/ rockchip,lane-rate;
+	/delete-node/ panel@0;
+	/delete-node/ ports;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port {
+			reg = <0>;
+			dsi_in_vop: endpoint {
+				remote-endpoint = <&vop_out_dsi>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+
+			mipi_dsi_out: endpoint {
+				data-lanes = <1 2 3 4>;
+				remote-endpoint = <&hdmi_out_in>;
+			};
+		};
+	};
+};
+
+&i2c5 {
+	status = "okay";
+	clock-frequency = <100000>;
+
+	gt9xx@14 {
+		status = "disabled";
+	};
+
+	hdmi-bridge@48 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&rst_lcd>;
+        compatible = "lontium,lt8912b";
+        reg = <0x48> ;
+        reset-gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_LOW>;
+
+        ports {
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            port@0 {
+                reg = <0>;
+                hdmi_out_in: endpoint {
+					data-lanes = <1 2 3 4>;
+					remote-endpoint = <&mipi_dsi_out>;
+                };
+            };
+
+            port@1 {
+                reg = <1>;
+                lt8912_out: endpoint {
+					remote-endpoint = <&hdmi_connector_in>;
+                };
+            };
+        };
+    };
+};

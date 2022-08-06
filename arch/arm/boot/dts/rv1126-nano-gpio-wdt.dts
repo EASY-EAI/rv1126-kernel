@@ -1,0 +1,28 @@
+/dts-v1/;
+#include "rv1126-nano.dts"
+/ {
+	gpio_wdt: gpio-wdt {
+		pinctrl-names = "default";
+		pinctrl-0 = <&wdt_rst>;
+		compatible = "linux,wdt-gpio";
+		gpios = <&gpio3 RK_PB1 0>;
+		hw_algo = "toggle";
+		hw_margin_ms = <1600>;
+		always-running;
+		status = "okay";
+	};
+};
+
+&i2c5 {
+	status = "disabled";
+};
+
+&pinctrl {
+	watchdog {
+		/omit-if-no-ref/
+		wdt_rst: wdt-rst {
+			rockchip,pins =
+				<3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
